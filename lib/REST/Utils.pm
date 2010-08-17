@@ -11,6 +11,7 @@ REST::Utils - Utility functions for REST applications
 
 package REST::Utils;
 
+use base qw( Exporter );
 use warnings;
 use strict;
 use Carp qw( croak );
@@ -32,7 +33,7 @@ applications.
 
 our @EXPORT_OK = qw/ media_type request_method /;
 
-our %EXPORT_TAGS = ( ':all' => [@EXPORT_OK] );
+our %EXPORT_TAGS = ( 'all' => [@EXPORT_OK] );
 
 =head2 FUNCTIONS
 
