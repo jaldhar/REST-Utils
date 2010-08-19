@@ -3,7 +3,7 @@
 # Test HTTP tunneling
 use strict;
 use warnings;
-use Test::More tests => 8;
+use Test::More tests => 9;
 use CGI;
 use Test::WWW::Mechanize::CGI;
 use REST::Utils qw( media_type );
@@ -48,4 +48,7 @@ is($mech->content_type, 'text/plain', 'POST preferred content type (with Content
 
 $mech->put('http://localhost/', Content_Type => 'text/plain');
 is($mech->content_type, 'text/plain', 'PUT preferred content type (with Content-Type');
+
+$mech->post('http://localhost/', Content_Type => 'text/plain', 'X-HTTP-Method-Override' => 'DELETE');
+is($mech->content_type, 'text/html', 'no content negotiation with DELETE');
 
