@@ -56,8 +56,8 @@ Example:
 sub content_prefs {
     my ($cgi) = @_;
 
-    my @types = reverse sort { $cgi->Accept($a) <=> $cgi->Accept($b) }
-        $cgi->Accept;
+    my @types =
+      reverse sort { $cgi->Accept($a) <=> $cgi->Accept($b) } $cgi->Accept;
 
     return @types;
 }
@@ -96,8 +96,8 @@ sub media_type {
     my $media_type = undef;
     if ( $req eq 'GET' || $req eq 'HEAD' ) {
         my @accepted = content_prefs($cgi);
-        foreach my $type ( @accepted ) {
-            if (scalar grep {$type eq $_ } @{$types}) {
+        foreach my $type (@accepted) {
+            if ( scalar grep { $type eq $_ } @{$types} ) {
                 $media_type = $type;
                 last;
             }
@@ -112,7 +112,7 @@ sub media_type {
             }
         }
     }
-    
+
     return $media_type;
 }
 
@@ -160,7 +160,8 @@ sub request_method {
     my $tunnel_method =
       uc(    $cgi->http('X-HTTP-Method-Override')
           || $cgi->url_param('_method')
-          || $cgi->param('_method')) || undef;
+          || $cgi->param('_method') )
+      || undef;
 
     return $real_method if !defined $tunnel_method;
 
