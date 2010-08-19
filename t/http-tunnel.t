@@ -3,7 +3,7 @@
 # Test HTTP tunneling
 use strict;
 use warnings;
-use Test::More tests => 25;
+use Test::More tests => 26;
 use CGI;
 use Test::WWW::Mechanize::CGI;
 use REST::Utils qw( request_method );
@@ -11,10 +11,13 @@ use REST::Utils qw( request_method );
 my $mech = Test::WWW::Mechanize::CGI->new;
 $mech->cgi( sub {
     my $q = CGI->new;    
+    if ($q->param('empty_req') || $q->url_param('empty_req')) {
+           delete $ENV{REQUEST_METHOD};
+    }
     my $method = request_method($q);
 
     print $q->header,
-        $q->start_html($method),
+        $q->start_html($method || 'empty'),
         $q->end_html;
 });
 
@@ -103,3 +106,5 @@ $mech->add_header('X-HTTP-Method-Override' => 'PUT');
 $mech->get('http://localhost/');
 $mech->title_is('GET', 'cannot tunnel PUT via GET (http header)');
 
+$mech->post('http://localhost/', {empty_req => 'DEMAND'});
+$mech->title_is('empty', 'empty request method');
