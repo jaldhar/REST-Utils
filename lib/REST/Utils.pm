@@ -160,8 +160,9 @@ sub request_method {
     my $tunnel_method =
       uc(    $cgi->http('X-HTTP-Method-Override')
           || $cgi->url_param('_method')
-          || $cgi->param('_method')
-          || $real_method );
+          || $cgi->param('_method')) || undef;
+
+    return $real_method if !defined $tunnel_method;
 
     # POST can tunnel any method.
     return $tunnel_method if $real_method eq 'POST';
@@ -238,3 +239,4 @@ with this distribution.
 1;    # End of REST::Utils
 
 __END__
+
