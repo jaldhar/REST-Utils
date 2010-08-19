@@ -7,6 +7,7 @@ README
 lib/REST/Utils.pm
 t/00-signature.t
 t/01-load.t
+t/content-negotiation.t
 t/http-tunnel.t
 xt/distmanifest.t
 xt/hasversion.t

@@ -31,7 +31,7 @@ applications.
 
 =cut
 
-our @EXPORT_OK = qw/ media_type request_method /;
+our @EXPORT_OK = qw/ content_prefs media_type request_method /;
 
 our %EXPORT_TAGS = ( 'all' => [@EXPORT_OK] );
 
@@ -41,6 +41,27 @@ The following functions are available. None of them are exported by default.
 You can give the tag :all to the C<use REST::Utils> statement to import all 
 the functions at once.
 
+=head3 content_prefs($cgi)
+
+Returns a list of MIME media types given in the requests C<Accept> HTTP header 
+sorted from most to least preferred.
+
+Example:
+
+    my @types = content_prefs($cgi);
+    # @types = ('text/html'. 'text/plain', '*/*')
+
+=cut
+
+sub content_prefs {
+    my ($cgi) = @_;
+
+    my @types = reverse sort { $cgi->Accept($a) <=> $cgi->Accept($b) }
+        $cgi->Accept;
+
+    return @types;
+}
+
 =head3 media_type($cgi, $types)
 
 This function is given a L<CGI>.pm compatible object and a reference to a 
@@ -48,10 +69,10 @@ list of MIME media types and returns the one most preferred by the requestor.
 
 Example:
 
-    my $prefered = media_type($cgi, ['text/html', 'text/plain', '*/*']);
+    my $preferred = media_type($cgi, ['text/html', 'text/plain', '*/*']);
 
 If the incoming request is a C<HEAD> or C<GET>, the function will return 
-the member of the type list which is most preferred based on the 
+the member of the C<types> listref which is most preferred based on the 
 C<Accept> HTTP headers sent by the requestor. If the requestor wants a 
 type which is not on the list, the function will return C<undef>. (HINT: 
 you can specify ' */*' to match every MIME media type.)
@@ -71,20 +92,19 @@ sub media_type {
 
     # Get the preferred MIME media type. Other HTTP verbs than the ones below
     # (and DELETE) are not covered. Should they be?
-    my $req        = $cgi->request_method;
+    my $req        = request_method($cgi);
     my $media_type = undef;
     if ( $req eq 'GET' || $req eq 'HEAD' ) {
-        my $quality = 0.000;
-        foreach my $type ( @{$types} ) {
-            my $temp_quality = $cgi->Accept($type);
-            if ( $temp_quality > $quality ) {
-                $quality    = $temp_quality;
+        my @accepted = content_prefs($cgi);
+        foreach my $type ( @accepted ) {
+            if (scalar grep {$type eq $_ } @{$types}) {
                 $media_type = $type;
+                last;
             }
         }
     }
     elsif ( $req eq 'POST' || $req eq 'PUT' ) {
-        my $ctype = $cgi->content_type;
+        my $ctype = $cgi->content_type || q{};
         foreach my $type ( @{$types} ) {
             if ( $ctype eq $type ) {
                 $media_type = $type;
@@ -92,7 +112,7 @@ sub media_type {
             }
         }
     }
-
+    
     return $media_type;
 }
 
