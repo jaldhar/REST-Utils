@@ -14,7 +14,7 @@ my $builder = Module::Build->new(
         'Test::WWW::Mechanize::CGI'     => 0,
     },
     requires => {
-        'perl'                          => 5.006,
+        'perl'                          => 5.008,
     },
     add_to_cleanup      => [ 'REST-Utils-*' ],
     create_makefile_pl  => 'traditional',

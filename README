@@ -41,7 +41,7 @@ using it.)
 
 DEPENDENCIES
 
-This module is pure perl and should work with any version of perl, 5.006 or 
+This module is pure perl and should work with any version of perl, 5.008 or 
 greater.
 
 The signature can be tested by installing the following module:
