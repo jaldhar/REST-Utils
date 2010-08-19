@@ -103,5 +103,3 @@ $mech->add_header('X-HTTP-Method-Override' => 'PUT');
 $mech->get('http://localhost/');
 $mech->title_is('GET', 'cannot tunnel PUT via GET (http header)');
 
-=cut
-
