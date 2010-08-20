@@ -24,7 +24,7 @@ $mech2->cgi( sub {
     $CGI::POST_MAX = 10;
     my $q = CGI->new;    
 
-    my $content = get_body($q) || undef;
+    my $content = get_body($q);
 
     output($q, $content);
 });
