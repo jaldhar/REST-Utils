@@ -12,24 +12,9 @@ $mech->cgi( sub {
     require CGI;    
     my $q = CGI->new;    
 
-    my $title = q{};
-
     my $content = get_body($q);
-    my $content_length = length $content;
 
-    if (!defined $content) {
-        $title = 'Content too big';
-    }
-    elsif ($content eq q{}) {
-        $title = 'No content';
-    }
-    else {
-        $title = length $content;
-    }
-    
-    print $q->header,
-        $q->start_html($title),
-        $q->end_html;
+    output($q, $content);
 });
 
 my $mech2 = Test::WWW::Mechanize::CGI->new;
@@ -39,9 +24,16 @@ $mech2->cgi( sub {
     $CGI::POST_MAX = 10;
     my $q = CGI->new;    
 
-    my $title = q{};
-
     my $content = get_body($q) || undef;
+
+    output($q, $content);
+});
+
+
+sub output {
+    my ($q, $content) = @_;
+
+    my $title = q{};
     my $content_length = defined $content ? length $content : 0;
 
     if (!defined $content) {
@@ -57,7 +49,9 @@ $mech2->cgi( sub {
     print $q->header,
         $q->start_html($title),
         $q->end_html;
-});
+
+    return;
+}
 
 $mech->post('http://localhost/');
 $mech->title_is('No content', 'POST with no content body');
