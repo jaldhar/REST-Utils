@@ -81,23 +81,20 @@ sub get_body {
     my $content = undef;
     my $method  = request_method($cgi);
 
-    if ( $method eq 'POST' ) {
-        $content = $cgi->param('POSTDATA');
-    }
-    elsif ( $method eq 'PUT' ) {
-        $content = $cgi->param('PUTDATA');
-    }
-
     my $type = $ENV{CONTENT_TYPE};
     my $len = $ENV{CONTENT_LENGTH} || 0;
 
-    if ( !defined $content ) {
-        if (   $CGI::POST_MAX != POST_UNLIMITED
-            && $len > $CGI::POST_MAX )
-        {
-            return;
-        }
+    if (   $CGI::POST_MAX != POST_UNLIMITED && $len > $CGI::POST_MAX ) {
+        return;
+    }
 
+    if ( $method eq 'POST' && defined $cgi->param('POSTDATA') ) {
+        $content = $cgi->param('POSTDATA');
+    }
+    elsif ( $method eq 'PUT' && defined $cgi->param('PUTDATA') ) {
+        $content = $cgi->param('PUTDATA');
+    }
+    else {
         # we may not get all the data we want with a single read on large
         # POSTs as it may not be here yet! Credit Jason Luther for patch
         # CGI.pm < 2.99 suffers from same bug -- derby
