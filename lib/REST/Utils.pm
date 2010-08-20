@@ -15,6 +15,8 @@ use base qw( Exporter );
 use warnings;
 use strict;
 use Carp qw( croak );
+use constant BUFSIZE        => 4096;
+use constant POST_UNLIMITED => -1;
 
 =head1 VERSION
 
@@ -31,7 +33,7 @@ applications.
 
 =cut
 
-our @EXPORT_OK = qw/ content_prefs media_type request_method /;
+our @EXPORT_OK = qw/ content_prefs get_body media_type request_method /;
 
 our %EXPORT_TAGS = ( 'all' => [@EXPORT_OK] );
 
@@ -60,6 +62,53 @@ sub content_prefs {
       reverse sort { $cgi->Accept($a) <=> $cgi->Accept($b) } $cgi->Accept;
 
     return @types;
+}
+
+=head3 get_body($cgi)
+
+This function will retrieve the body of an HTTP request regardless of the
+request method.  If the body is larger than L<CGI>.pms' POST_MAX variable
+allows, C<get_body> will return undef.  If there is no body, it will return
+an empty scalar.  Otherwise it will return a scalar containing the body as
+a sequence of bytes.  It is up to you to turn this into something useful.
+
+=cut
+
+# bits of this taken from derby http://www.perlmonks.org/?node_id=609632
+sub get_body {
+    my ($cgi) = @_;
+
+    my $content = undef;
+    my $method  = request_method($cgi);
+
+    if ( $method eq 'POST' ) {
+        $content = $cgi->param('POSTDATA');
+    }
+    elsif ( $method eq 'PUT' ) {
+        $content = $cgi->param('PUTDATA');
+    }
+
+    my $type = $ENV{CONTENT_TYPE};
+    my $len = $ENV{CONTENT_LENGTH} || 0;
+
+    if ( !defined $content ) {
+        if (   $CGI::POST_MAX != POST_UNLIMITED
+            && $len > $CGI::POST_MAX )
+        {
+            return;
+        }
+
+        # we may not get all the data we want with a single read on large
+        # POSTs as it may not be here yet! Credit Jason Luther for patch
+        # CGI.pm < 2.99 suffers from same bug -- derby
+        sysread STDIN, $content, $len;
+        while ( length($content) < $len ) {
+            last if !sysread STDIN, my $buffer, BUFSIZE;
+            $content .= $buffer;
+        }
+    }
+
+    return $content . q{};    # To make sure it is not undef at this point.
 }
 
 =head3 media_type($cgi, $types)
