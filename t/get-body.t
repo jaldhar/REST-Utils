@@ -3,7 +3,7 @@
 # Test retrieval of HTTP request body.
 use strict;
 use warnings;
-use Test::More tests => 7;
+use Test::More tests => 9;
 use Test::WWW::Mechanize::CGI;
 use REST::Utils qw( get_body );
 
@@ -77,3 +77,11 @@ $mech2->title_is('Content too big', 'POST with content_length > POST_MAX');
 $mech2->post('http://localhost/', content_type => 'text/plain',
     content => 'x' x 10);
 $mech2->title_is('10', 'POST with content_length < POST_MAX');
+
+$mech2->post('http://localhost/?_method=get', content_type => 'text/plain',
+    content => 'x' x 10, content_length => 15);
+$mech2->title_is('Content too big', 'bogus content length (too big)');
+
+$mech2->post('http://localhost/?_method=get', content_type => 'text/plain',
+    content => 'x' x 10, content_length => undef);
+$mech2->title_is('Content too big', 'missing content length');
