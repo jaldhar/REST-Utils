@@ -94,8 +94,7 @@ sub get_body {
     elsif ( $method eq 'PUT' && defined $cgi->param('PUTDATA') ) {
         $content = $cgi->param('PUTDATA');
     }
-
-    if (!defined $content) {
+    else {
         # we may not get all the data we want with a single read on large
         # POSTs as it may not be here yet! Credit Jason Luther for patch
         # CGI.pm < 2.99 suffers from same bug -- derby
@@ -105,7 +104,8 @@ sub get_body {
         }
     }
 
-    return $content . q{};    # To make sure it is not undef at this point.
+    # To make sure it is not undef at this point.
+    return defined $content ? $content : q{};
 }
 
 =head3 media_type($cgi, $types)
