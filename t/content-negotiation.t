@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Test HTTP tunneling
+# Test content negotiation
 use strict;
 use warnings;
 use Test::More tests => 9;
