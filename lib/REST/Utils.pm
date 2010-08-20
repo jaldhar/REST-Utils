@@ -94,7 +94,8 @@ sub get_body {
     elsif ( $method eq 'PUT' && defined $cgi->param('PUTDATA') ) {
         $content = $cgi->param('PUTDATA');
     }
-    else {
+
+    if (!defined $content) {
         # we may not get all the data we want with a single read on large
         # POSTs as it may not be here yet! Credit Jason Luther for patch
         # CGI.pm < 2.99 suffers from same bug -- derby
