@@ -67,10 +67,20 @@ sub content_prefs {
 =head3 get_body($cgi)
 
 This function will retrieve the body of an HTTP request regardless of the
-request method.  If the body is larger than L<CGI>.pms' POST_MAX variable
-allows, C<get_body> will return undef.  If there is no body, it will return
-an empty scalar.  Otherwise it will return a scalar containing the body as
-a sequence of bytes.  It is up to you to turn this into something useful.
+request method.
+
+If the body is larger than L<CGI>.pms' POST_MAX variable allows or if
+C<$ENV{CONTENT_LENGTH}> reports a bigger size than is actually available,
+C<get_body> will return undef.
+
+If there is no body or if C<$ENV{CONTENT_LENGTH}> is undefined, it will
+return an empty string.
+
+Otherwise it will return a scalar containing the body as a sequence of bytes
+up to the size of C<$ENV{CONTENT_LENGTH}>
+
+It is up to you to turn the bytes returned by C<get_body> into something
+useful.
 
 =cut
 
@@ -81,26 +91,27 @@ sub get_body {
     my $content = undef;
     my $method  = request_method($cgi);
 
-    my $type = $ENV{CONTENT_TYPE};
     my $len = $ENV{CONTENT_LENGTH} || 0;
 
     if (   $CGI::POST_MAX != POST_UNLIMITED && $len > $CGI::POST_MAX ) {
         return;
     }
 
-    if ( $method eq 'POST' && defined $cgi->param('POSTDATA') ) {
+    if ( defined $cgi->param('POSTDATA') ) {
         $content = $cgi->param('POSTDATA');
     }
-    elsif ( $method eq 'PUT' && defined $cgi->param('PUTDATA') ) {
+    elsif ( defined $cgi->param('PUTDATA') ) {
         $content = $cgi->param('PUTDATA');
     }
     else {
         # we may not get all the data we want with a single read on large
         # POSTs as it may not be here yet! Credit Jason Luther for patch
         # CGI.pm < 2.99 suffers from same bug -- derby
-        my $buffersize = $len < BUFSIZE ? $len : BUFSIZE;
-        while ( sysread STDIN, my $buffer, $buffersize ) {
-            $content .= $buffer;
+        my $bytes = 0;
+        while ($bytes <= $len) {
+            my $count = sysread STDIN, (my $buffer), $len;
+            last if $count == 0;
+            $bytes += $count;
         }
     }
 
