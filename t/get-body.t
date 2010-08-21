@@ -83,4 +83,4 @@ $mech->title_is('Content too big', 'bogus content length (too big)');
 
 $mech2->get('http://localhost/', content_type => 'text/plain',
     content => 'x' x 10, content_length => undef);
-$mech2->title_is('10', 'missing content length');
+$mech2->title_is('No content', 'missing content length');
