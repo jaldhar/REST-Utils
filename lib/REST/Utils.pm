@@ -15,7 +15,6 @@ use base qw( Exporter );
 use warnings;
 use strict;
 use Carp qw( croak );
-use constant BUFSIZE        => 4096;
 use constant POST_UNLIMITED => -1;
 
 =head1 VERSION
@@ -93,7 +92,7 @@ sub get_body {
 
     my $len = $ENV{CONTENT_LENGTH} || 0;
 
-    if (   $CGI::POST_MAX != POST_UNLIMITED && $len > $CGI::POST_MAX ) {
+    if ( $CGI::POST_MAX != POST_UNLIMITED && $len > $CGI::POST_MAX ) {
         return;
     }
 
@@ -104,10 +103,11 @@ sub get_body {
         $content = $cgi->param('PUTDATA');
     }
     else {
+
         # we may not get all the data we want with a single read on large
         # POSTs as it may not be here yet! Credit Jason Luther for patch
         # CGI.pm < 2.99 suffers from same bug -- derby
-        while (sysread STDIN, (my $buffer), $len) {
+        while ( sysread STDIN, ( my $buffer ), $len ) {
             $content .= $buffer;
         }
     }
