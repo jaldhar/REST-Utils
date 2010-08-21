@@ -1,0 +1,16 @@
+Source: librest-utils-perl
+Section: perl
+Priority: optional
+Build-Depends: debhelper (>= 7)
+Build-Depends-Indep: libtest-www-mechanize-cgi-perl, perl
+Maintainer: Jaldhar H. Vyas <jaldhar@debian.org>
+Standards-Version: 3.9.1
+Homepage: http://search.cpan.org/dist/REST-Utils/
+
+Package: librest-utils-perl
+Architecture: all
+Depends: ${misc:Depends}, ${perl:Depends}, perl
+Description: Utility functions for REST applications
+ REST::Utils contains some functions that are useful for implementing REST
+ applications. They are designed to work with CGI.pm or something compatible
+ with CGI.pm.

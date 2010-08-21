@@ -1,0 +1,11 @@
+librest-utils-perl (0.2-1) UNRELEASED; urgency=low
+
+  * New upstream version.
+
+ -- Jaldhar H. Vyas <jaldhar@debian.org>  Sat, 21 Aug 2010 16:22:29 -0400
+
+librest-utils-perl (0.1-1) UNRELEASED; urgency=low
+
+  * Initial Release.
+
+ -- Jaldhar H. Vyas <jaldhar@debian.org>  Sat, 21 Aug 2010 03:45:31 -0400
