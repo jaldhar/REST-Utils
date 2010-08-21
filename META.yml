@@ -20,5 +20,7 @@ provides:
 requires:
   perl: 5.008
 resources:
+  homepage: http://jaldhar.github.com/REST-Utils
   license: http://dev.perl.org/licenses/
+  repository: http://github.com/jaldhar/REST-Utils
 version: 0.1

@@ -19,6 +19,13 @@ my $builder = Module::Build->new(
     add_to_cleanup      => [ 'REST-Utils-*' ],
     create_makefile_pl  => 'traditional',
     sign                => 1,
+    meta_merge => {
+        resources => {
+            repository  => 'http://github.com/jaldhar/REST-Utils',
+            homepage    => 'http://jaldhar.github.com/REST-Utils',
+        },
+    },
+                                                
 );
 
 $builder->create_build_script();
