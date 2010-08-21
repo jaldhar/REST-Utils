@@ -1,5 +1,9 @@
 Revision history for REST-Utils
 
-0.01    Sat Aug 21 02:14:20 EDT 2010
+0.2     Sat Aug 21 15:54:44 EDT 2010
+        Mistake in Build.PL lead to wrong name for the module in places.
+        Documentation updates.
+        
+0.1     Sat Aug 21 02:14:20 EDT 2010
         First version, released on an unsuspecting world.
 
