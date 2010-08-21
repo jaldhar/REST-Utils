@@ -3,12 +3,11 @@ use warnings;
 use Module::Build;
 
 my $builder = Module::Build->new(
-    dist_name           => 'REST-Utils',
-    module_name         => 'REST-Utils',
+    module_name         => 'REST::Utils',
     dist_abstract       => 'Utility functions for REST applications',
     dist_author         => 'Jaldhar H. Vyas <jaldhar@braincells.com>',
     license             => 'perl',
-    dist_version        => '0.1',
+    dist_version_from   => 'lib/REST/Utils.pm',
     build_requires => {
         'Test::More'                    => 0,
         'Test::WWW::Mechanize::CGI'     => 0,
