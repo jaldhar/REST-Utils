@@ -67,7 +67,7 @@ $mech->title_is('100', 'POST with content body');
 
 $mech->put('http://localhost/', content_type => 'text/plain',
     content => 'x' x 100);
-$mech->title_is('100', 'POST with content body');
+$mech->title_is('100', 'PUT with content body');
 
 $mech->post('http://localhost/', content_type => 'text/plain',
     content => 'x' x 5000);
