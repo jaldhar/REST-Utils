@@ -27,8 +27,9 @@ our $VERSION = '0.1';
 
 =head1 DESCRIPTION
 
-This module contains some functions that are useful for implementing REST 
-applications.
+This module contains some functions that are useful for implementing REST
+applications.  They are designed to work with L<CGI>.pm or something
+compatible with L<CGI>.pm.
 
 =cut
 
@@ -38,9 +39,11 @@ our %EXPORT_TAGS = ( 'all' => [@EXPORT_OK] );
 
 =head2 FUNCTIONS
 
-The following functions are available. None of them are exported by default. 
-You can give the tag :all to the C<use REST::Utils> statement to import all 
+The following functions are available. None of them are exported by default.
+You can give the tag :all to the C<use REST::Utils> statement to import all
 the functions at once.
+
+Each function takes a L<CGI> or compatible object as its first parameter.
 
 =head3 content_prefs($cgi)
 
@@ -116,10 +119,10 @@ sub get_body {
     return defined $content ? $content : q{};
 }
 
-=head3 media_type($cgi, $types)
+=head3 media_type($cgi, \@types)
 
-This function is given a L<CGI>.pm compatible object and a reference to a 
-list of MIME media types and returns the one most preferred by the requestor. 
+C<types> is a reference to a list of MIME media types. The function returns
+the member of the list most preferred by the requestor.
 
 Example:
 
@@ -172,8 +175,7 @@ sub media_type {
 
 =head3 request_method($cgi)
 
-This function is given a L<CGI>.pm compatible object and returns the query's 
-HTTP request method.  
+This function returns the query's HTTP request method.
 
 Example 1:
 
