@@ -108,9 +108,10 @@ sub get_body {
         # POSTs as it may not be here yet! Credit Jason Luther for patch
         # CGI.pm < 2.99 suffers from same bug -- derby
         my $bytes = 0;
-        while ($bytes <= $len) {
+        while ($bytes < $len) {
             my $count = sysread STDIN, (my $buffer), $len;
             last if $count == 0;
+            $content .= $buffer;
             $bytes += $count;
         }
     }
