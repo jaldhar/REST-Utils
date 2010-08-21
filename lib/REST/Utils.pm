@@ -107,12 +107,8 @@ sub get_body {
         # we may not get all the data we want with a single read on large
         # POSTs as it may not be here yet! Credit Jason Luther for patch
         # CGI.pm < 2.99 suffers from same bug -- derby
-        my $bytes = 0;
-        while ($bytes < $len) {
-            my $count = sysread STDIN, (my $buffer), $len;
-            last if $count == 0;
+        while (sysread STDIN, (my $buffer), $len) {
             $content .= $buffer;
-            $bytes += $count;
         }
     }
 
