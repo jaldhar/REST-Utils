@@ -3,8 +3,8 @@ require 5.008;
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'NAME' => 'REST-Utils',
-          'VERSION_FROM' => 'lib/REST-Utils.pm',
+          'NAME' => 'REST::Utils',
+          'VERSION_FROM' => 'lib/REST/Utils.pm',
           'PREREQ_PM' => {
                            'Test::More' => 0,
                            'Test::WWW::Mechanize::CGI' => 0
