@@ -3,7 +3,7 @@
 # Test retrieval of HTTP request body.
 use strict;
 use warnings;
-use Test::More tests => 9;
+use Test::More tests => 10;
 use Test::WWW::Mechanize::CGI;
 use REST::Utils qw( get_body );
 
@@ -62,6 +62,10 @@ $mech->get('http://localhost/');
 $mech->title_is('No content', 'GET with no content body');
 
 $mech->post('http://localhost/', content_type => 'text/plain',
+    content => 'x' x 100);
+$mech->title_is('100', 'POST with content body');
+
+$mech->put('http://localhost/', content_type => 'text/plain',
     content => 'x' x 100);
 $mech->title_is('100', 'POST with content body');
 
