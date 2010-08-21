@@ -10,3 +10,4 @@
 .git
 .tmp
 ^MYMETA.yml$
+^xt/
