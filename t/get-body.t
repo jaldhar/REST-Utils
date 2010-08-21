@@ -69,9 +69,9 @@ $mech->put('http://localhost/', content_type => 'text/plain',
     content => 'x' x 100);
 $mech->title_is('100', 'PUT with content body');
 
-$mech->post('http://localhost/', content_type => 'text/plain',
-    content => 'x' x 5000);
-$mech->title_is('5000', 'POST with large content body');
+$mech->get('http://localhost/', content_type => 'text/plain',
+    content => 'x' x 50000);
+$mech->title_is('50000', 'GET with large content body');
 
 $mech2->post('http://localhost/', content_type => 'text/plain',
     content => 'x' x 100);
