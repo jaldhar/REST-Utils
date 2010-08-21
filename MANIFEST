@@ -10,14 +10,5 @@ t/01-load.t
 t/content-negotiation.t
 t/get-body.t
 t/http-tunnel.t
-xt/distmanifest.t
-xt/hasversion.t
-xt/kwalitee.t
-xt/meta.t
-xt/minimumversion.t
-xt/perlcriticrc
-xt/perl-critic.t
-xt/pod-coverage.t
-xt/pod.t
 Makefile.PL
 META.yml
