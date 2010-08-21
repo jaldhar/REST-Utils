@@ -29,7 +29,6 @@ $mech2->cgi( sub {
     output($q, $content);
 });
 
-
 sub output {
     my ($q, $content) = @_;
 
@@ -78,10 +77,10 @@ $mech2->post('http://localhost/', content_type => 'text/plain',
     content => 'x' x 10);
 $mech2->title_is('10', 'POST with content_length < POST_MAX');
 
-$mech2->post('http://localhost/?_method=get', content_type => 'text/plain',
+$mech->get('http://localhost/', content_type => 'text/plain',
     content => 'x' x 10, content_length => 5000);
-$mech2->title_is('10', 'bogus content length (too big)');
+$mech->title_is('Content too big', 'bogus content length (too big)');
 
-$mech2->post('http://localhost/?_method=get', content_type => 'text/plain',
+$mech2->get('http://localhost/', content_type => 'text/plain',
     content => 'x' x 10, content_length => undef);
-$mech2->title_is('No content', 'missing content length');
+$mech2->title_is('10', 'missing content length');
