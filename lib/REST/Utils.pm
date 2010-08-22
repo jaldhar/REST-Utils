@@ -81,7 +81,7 @@ return an empty string.
 Otherwise it will return a scalar containing the body as a sequence of bytes
 up to the size of C<$ENV{CONTENT_LENGTH}>
 
-It is up to you to turn the bytes returned by C<get_body> into something
+It is up to you to turn the bytes returned by L<get_body> into something
 useful.
 
 =cut
