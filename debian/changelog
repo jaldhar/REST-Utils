@@ -1,3 +1,10 @@
+librest-utils-perl (0.3-1) UNRELEASED; urgency=low
+
+  * New upstream version.
+  * Changed source format to 3.0 (quilt)
+
+ -- Jaldhar H. Vyas <jaldhar@debian.org>  Fri, 27 Aug 2010 13:56:20 -0400
+
 librest-utils-perl (0.2-1) UNRELEASED; urgency=low
 
   * New upstream version.

@@ -19,11 +19,11 @@ use constant POST_UNLIMITED => -1;
 
 =head1 VERSION
 
-This document describes REST::Utils Version 0.2
+This document describes REST::Utils Version 0.3
 
 =cut
 
-our $VERSION = '0.2';
+our $VERSION = '0.3';
 
 =head1 DESCRIPTION
 
@@ -81,7 +81,7 @@ return an empty string.
 Otherwise it will return a scalar containing the body as a sequence of bytes
 up to the size of C<$ENV{CONTENT_LENGTH}>
 
-It is up to you to turn the bytes returned by C<get_body> into something
+It is up to you to turn the bytes returned by L<get_body> into something
 useful.
 
 =cut
@@ -140,7 +140,7 @@ the list and return that type if it matches a member of the list or
 C<undef> if it doesn't.
 
 For other HTTP requests (such as C<DELETE>) this function will always return
-undef.
+an empty string.
 
 =cut
 
@@ -161,13 +161,17 @@ sub media_type {
         }
     }
     elsif ( $req eq 'POST' || $req eq 'PUT' ) {
-        my $ctype = $cgi->content_type || q{};
+        my $ctype = $cgi->content_type;
+
         foreach my $type ( @{$types} ) {
             if ( $ctype eq $type ) {
                 $media_type = $type;
                 last;
             }
         }
+    }
+    else {
+        $media_type = q{};
     }
 
     return $media_type;
