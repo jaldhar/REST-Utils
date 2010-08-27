@@ -1,5 +1,11 @@
 Revision history for REST-Utils
 
+0.3     Fri Aug 27 12:59:33 EDT 2010
+        Changed the return value of media_type() in cases where content
+        negotiation is not supported for a request method.  e.g. DELETE.
+
+        Improved some tests so they give better coverage.
+
 0.2     Sat Aug 21 15:54:44 EDT 2010
         Mistake in Build.PL lead to wrong name for the module in places.
         Documentation updates.
