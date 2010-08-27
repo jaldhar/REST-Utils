@@ -6,7 +6,7 @@ Build-Depends-Indep: libtest-www-mechanize-cgi-perl, perl
 Maintainer: Jaldhar H. Vyas <jaldhar@debian.org>
 Standards-Version: 3.9.1
 Homepage: http://search.cpan.org/dist/REST-Utils/
-Vcs-git: git@github.com:jaldhar/REST-Utils.git
+Vcs-git: git://git@github.com:jaldhar/REST-Utils.git
 Vcs-Browser: http://github.com/jaldhar/REST-Utils
 
 Package: librest-utils-perl
