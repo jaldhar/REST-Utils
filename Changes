@@ -1,5 +1,12 @@
 Revision history for REST-Utils
 
+0.4     Tue Aug 31 22:20:53 EDT 2010
+        Removed the content_prefs() function as it isn't really helpful.
+
+        Added some functions for parsing MIME types the right way.
+
+        Made media_type() use the new MIME type parsing internally.
+
 0.3     Fri Aug 27 12:59:33 EDT 2010
         Changed the return value of media_type() in cases where content
         negotiation is not supported for a request method.  e.g. DELETE.

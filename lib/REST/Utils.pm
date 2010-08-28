@@ -15,25 +15,30 @@ use base qw( Exporter );
 use warnings;
 use strict;
 use Carp qw( croak );
-use constant POST_UNLIMITED => -1;
+use Scalar::Util qw( looks_like_number );
+use constant NOT_FIT         => -1;
+use constant HUNDRED_PERCENT => 100;
+use constant TEN_PERCENT     => 10;
+use constant POST_UNLIMITED  => -1;
 
 =head1 VERSION
 
-This document describes REST::Utils Version 0.3
+This document describes REST::Utils Version 0.4
 
 =cut
 
-our $VERSION = '0.3';
+our $VERSION = '0.4';
 
 =head1 DESCRIPTION
 
 This module contains some functions that are useful for implementing REST
-applications.  They are designed to work with L<CGI>.pm or something
-compatible with L<CGI>.pm.
+applications.
 
 =cut
 
-our @EXPORT_OK = qw/ content_prefs get_body media_type request_method /;
+our @EXPORT_OK = qw/  best_match get_body fitness_and_quality_parsed
+  media_type parse_media_range parse_mime_type quality quality_parsed
+  request_method /;
 
 our %EXPORT_TAGS = ( 'all' => [@EXPORT_OK] );
 
@@ -43,37 +48,41 @@ The following functions are available. None of them are exported by default.
 You can give the tag :all to the C<use REST::Utils> statement to import all
 the functions at once.
 
-Each function takes a L<CGI> or compatible object as its first parameter.
+=head3 best_match(\@supported, $header)
 
-=head3 content_prefs($cgi)
-
-Returns a list of MIME media types given in the requests C<Accept> HTTP header 
-sorted from most to least preferred.
+Takes an arrayref of supported MIME types and finds the best match for
+all the media-ranges listed in $header. The value of $header must be a
+string that conforms to the format of the HTTP Accept: header. The
+value of @supported is a list of MIME types.  If no type can be matched,
+C<undef> is returned.
 
 Example:
 
-    my @types = content_prefs($cgi);
-    # @types = ('text/html'. 'text/plain', '*/*')
+    print best_match(['application/xbel+xml', 'text/xml'],
+        'text/*;q=0.5,*/*; q=0.1');
+    # text/xml
 
 =cut
 
-sub content_prefs {
-    my ($cgi) = @_;
-
-    my @types =
-      reverse sort { $cgi->Accept($a) <=> $cgi->Accept($b) } $cgi->Accept;
-
-    return @types;
+sub best_match {
+    my ( $supported, $header ) = @_;
+    my @parsed_header = map { [ parse_media_range($_) ] } split /,/msx, $header;
+    my @weighted_matches =
+      sort { $a->[0][0] <=> $b->[0][0] || $a->[0][1] <=> $b->[0][1] }
+      map { [ [ fitness_and_quality_parsed( $_, @parsed_header ) ], $_ ] }
+      @{$supported};
+    return $weighted_matches[-1][0][1] ? $weighted_matches[-1][1] : undef;
 }
 
 =head3 get_body($cgi)
 
-This function will retrieve the body of an HTTP request regardless of the
-request method.
+This function takes a L<CGI> or compatible object as its first parameter.
+
+It will retrieve the body of an HTTP request regardless of the request method.
 
 If the body is larger than L<CGI>.pms' POST_MAX variable allows or if
 C<$ENV{CONTENT_LENGTH}> reports a bigger size than is actually available,
-C<get_body> will return undef.
+get_body() will return undef.
 
 If there is no body or if C<$ENV{CONTENT_LENGTH}> is undefined, it will
 return an empty string.
@@ -81,7 +90,7 @@ return an empty string.
 Otherwise it will return a scalar containing the body as a sequence of bytes
 up to the size of C<$ENV{CONTENT_LENGTH}>
 
-It is up to you to turn the bytes returned by L<get_body> into something
+It is up to you to turn the bytes returned by get_body() into something
 useful.
 
 =cut
@@ -119,9 +128,61 @@ sub get_body {
     return defined $content ? $content : q{};
 }
 
+=head3 fitness_and_quality_parsed($mime_type, @parsed_ranges)
+
+Find the best match for a given mime-type against a list of media_ranges that
+have already been parsed by parse_media_range(). Returns a list of the fitness
+value and the value of the 'q' quality parameter of the best match, or (-1, 0)
+if no match was found. Just as for quality_parsed(), @parsed_ranges must be a
+list of parsed media ranges.
+
+=cut
+
+sub fitness_and_quality_parsed {
+    my ( $mime_type, @parsed_ranges ) = @_;
+    my $best_fitness = NOT_FIT;
+    my $best_fit_q   = 0;
+    my ( $target_type, $target_subtype, $target_params ) =
+      parse_media_range($mime_type);
+    while ( my ( $type, $subtype, $params ) = @{ shift @parsed_ranges || [] } )
+    {
+        $subtype = defined $subtype ? $subtype : q{};
+        if (
+            ( $type eq $target_type || $type eq q{*} || $target_type eq q{*} )
+            && (   $subtype eq $target_subtype
+                || $subtype eq q{*}
+                || $target_subtype eq q{*} )
+          )
+        {
+            my $param_matches = scalar grep {
+                     $_ ne 'q'
+                  && exists $params->{$_}
+                  && $target_params->{$_} eq $params->{$_}
+              }
+              keys %{$target_params};
+            my $fitness =
+              $type eq $target_type
+              ? HUNDRED_PERCENT
+              : 0;
+            $fitness +=
+              $subtype eq $target_subtype
+              ? TEN_PERCENT
+              : 0;
+            $fitness += $param_matches;
+            if ( $fitness > $best_fitness ) {
+                $best_fitness = $fitness;
+                $best_fit_q   = $params->{q};
+            }
+        }
+    }
+
+    return $best_fitness, $best_fit_q;
+}
+
 =head3 media_type($cgi, \@types)
 
-C<types> is a reference to a list of MIME media types. The function returns
+This function takes a L<CGI> or compatible object as its first parameter and a
+reference to a list of MIME media types as the second parameter.  It returns
 the member of the list most preferred by the requestor.
 
 Example:
@@ -152,29 +213,107 @@ sub media_type {
     my $req        = request_method($cgi);
     my $media_type = undef;
     if ( $req eq 'GET' || $req eq 'HEAD' ) {
-        my @accepted = content_prefs($cgi);
-        foreach my $type (@accepted) {
-            if ( scalar grep { $type eq $_ } @{$types} ) {
-                $media_type = $type;
-                last;
-            }
-        }
+        $media_type = best_match( $types, $cgi->http('accept') );
     }
     elsif ( $req eq 'POST' || $req eq 'PUT' ) {
-        my $ctype = $cgi->content_type;
-
-        foreach my $type ( @{$types} ) {
-            if ( $ctype eq $type ) {
-                $media_type = $type;
-                last;
-            }
-        }
+        $media_type = best_match( $types, $cgi->content_type );
     }
     else {
         $media_type = q{};
     }
 
     return $media_type;
+}
+
+=head3 parse_media_range($range)
+
+Carves up a media range and returns a list of the C<($type, $subtype,\%params)>
+where %params is a hash of all the parameters for the media range.
+
+For example, the media range 'application/*;q=0.5' would get
+parsed into:
+
+    ('application', '*', { q => 0.5 })
+
+In addition this function also guarantees that there is a value for 'q' in the
+%params hash, filling it in with a proper default if necessary.
+
+=cut
+
+sub parse_media_range {
+    my ($range) = @_;
+    my ( $type, $subtype, $params ) = parse_mime_type($range);
+
+    if (   !exists $params->{q}
+        || !$params->{q}
+        || !looks_like_number( $params->{q} )
+        || $params->{q} > 1
+        || $params->{q} < 0 )
+    {
+        $params->{q} = 1;
+    }
+    return $type, $subtype, $params;
+}
+
+=head3 parse_mime_type($mime_type)
+
+Carves up a MIME type and returns a list of the ($type, $subtype,
+\%params) where %params is a hash of all the parameters for the media range.
+
+For example, the media range 'application/xhtml;q=0.5' would get parsed into:
+
+    ('application', 'xhtml', { q => 0.5 })
+
+=cut
+
+sub parse_mime_type {
+    my ($mime_type) = @_;
+
+    my @parts = split /;/msx, $mime_type;
+    my %params =
+      map { _strip($_) } map { split /=/msx, $_, 2 } @parts[ 1 .. $#parts ];
+    my $full_type = _strip( $parts[0] );
+
+    # Java URLConnection class sends an Accept header that includes a single
+    # "*" Turn it into a legal wildcard.
+
+    if ( $full_type eq q{*} ) {
+        $full_type = q{*/*};
+    }
+    my ( $type, $subtype ) = split m{/}msx, $full_type;
+    return _strip($type), _strip($subtype), \%params;
+}
+
+=head3 quality($mime_type, $ranges)
+
+Returns the quality 'q' of a MIME type when compared against the
+media-ranges in $ranges. For example:
+
+    print quality('text/html', 'text/*;q=0.3, text/html;q=0.7, text/html;level
+    # 0.7
+
+=cut
+
+sub quality {
+    my ( $mime_type, $ranges ) = @_;
+    my @parsed_ranges = map { [ parse_media_range($_) ] } split /,/msx, $ranges;
+    return quality_parsed( $mime_type, @parsed_ranges );
+}
+
+=head3 quality_parsed($mime_type, @parsed_ranges)
+
+Find the best match for a given MIME type against a list of media_ranges
+that have already been parsed by parse_media_range(). Returns the 'q'
+quality parameter of the best match, 0 if no match was found. This
+function behaves the same as quality() except that @parsed_ranges must
+be a list of parsed media ranges.
+
+=cut
+
+sub quality_parsed {
+    my (@args) = @_;
+
+    return ( fitness_and_quality_parsed(@args) )[1];
 }
 
 =head3 request_method($cgi)
@@ -185,6 +324,7 @@ Example 1:
 
     my $method = request_method($cgi);
     
+This function takes a L<CGI> or compatible object as its first parameter.
 
 Because many web sites don't allow the full set of HTTP methods needed 
 for REST, you can "tunnel" methods through C<GET> or C<POST> requests in 
@@ -238,6 +378,14 @@ sub request_method {
     return $real_method;
 }
 
+# utility function
+sub _strip {
+    my $s = shift;
+    $s =~ s/^\s*//msx;
+    $s =~ s/\s*$//msx;
+    return $s;
+}
+
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
@@ -275,6 +423,13 @@ C<bug-rest-Utils at rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=REST-Utils>.
 I will be notified, and then you'll automatically be notified of progress on
 your bug as I make changes.
+
+=head1 THANKS
+
+MIME type parsing code borrowed from MIMEParser.pm by:
+  Joe Gregorio C<< joe at bitworking.org >>
+  Stanis Trendelenburg C<< stanis.trendelenburg at gmail.com >>
+  (L<http://code.google.com/p/mimeparse/>)
 
 =head1 AUTHOR
 

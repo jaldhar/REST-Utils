@@ -13,7 +13,7 @@ $mech->cgi( sub {
     my $q = CGI->new;    
 
     my $preferred = media_type($q, 
-        ['application/xhtml+xml', 'text/html', 'text/plain', '*/*']);
+        ['application/xhtml+xml', 'text/html', 'text/plain']);
     if (!defined $preferred) {
         print $q->header(-status => '415 Media Type Unsupported', -type => 'text/plain');
     }
