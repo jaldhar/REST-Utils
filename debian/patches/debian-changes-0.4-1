@@ -1,12 +1,11 @@
-Description: Upstream changes introduced in version 0.3-1
+Description: Upstream changes introduced in version 0.4-1
  This patch has been created by dpkg-source during the package build.
  Here's the last changelog entry, hopefully it gives details on why
  those changes were made:
  .
- librest-utils-perl (0.3-1) UNRELEASED; urgency=low
+ librest-utils-perl (0.4-1) UNRELEASED; urgency=low
  .
    * New upstream version.
-   * Changed source format to 3.0 (quilt)
  .
  The person named in the Author field signed this changelog entry.
 Author: Jaldhar H. Vyas <jaldhar@debian.org>
@@ -24,10 +23,10 @@ Forwarded: <no|not-needed|url proving that it has been forwarded>
 Reviewed-By: <name and email of someone who approved the patch>
 Last-Update: <YYYY-MM-DD>
 
---- librest-utils-perl-0.3.orig/MANIFEST
-+++ librest-utils-perl-0.3/MANIFEST
-@@ -12,4 +12,3 @@ t/get-body.t
- t/http-tunnel.t
+--- librest-utils-perl-0.4.orig/MANIFEST
++++ librest-utils-perl-0.4/MANIFEST
+@@ -13,4 +13,3 @@ t/http-tunnel.t
+ t/mime-parse.t
  Makefile.PL
  META.yml
 -SIGNATURE    Added here by Module::Build
