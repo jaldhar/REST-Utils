@@ -10,5 +10,6 @@ t/01-load.t
 t/content-negotiation.t
 t/get-body.t
 t/http-tunnel.t
+t/mime-parse.t
 Makefile.PL
 META.yml
