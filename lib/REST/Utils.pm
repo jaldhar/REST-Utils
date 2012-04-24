@@ -356,11 +356,12 @@ attempted, it will be ignored.
 sub request_method {
     my ($cgi) = @_;
 
-    my $real_method = uc $cgi->request_method() || q{};
+    my $real_method = uc( $cgi->request_method() || q{} );
     my $tunnel_method =
       uc(    $cgi->http('X-HTTP-Method-Override')
           || $cgi->url_param('_method')
-          || $cgi->param('_method') )
+          || $cgi->param('_method')
+          || q{} )
       || undef;
 
     return $real_method if !defined $tunnel_method;
