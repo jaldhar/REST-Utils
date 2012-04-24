@@ -11,3 +11,4 @@
 .tmp
 ^MYMETA.yml$
 ^xt/
+^MYMETA\.json$

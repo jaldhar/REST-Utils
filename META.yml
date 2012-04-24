@@ -6,8 +6,9 @@ build_requires:
   Test::More: 0
   Test::WWW::Mechanize::CGI: 0
 configure_requires:
-  Module::Build: 0.36
-generated_by: 'Module::Build version 0.3603'
+  Module::Build: 0.38
+dynamic_config: 1
+generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.110930'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -16,11 +17,11 @@ name: REST-Utils
 provides:
   REST::Utils:
     file: lib/REST/Utils.pm
-    version: 0.4
+    version: 0.5
 requires:
   perl: 5.008
 resources:
   homepage: http://jaldhar.github.com/REST-Utils
   license: http://dev.perl.org/licenses/
   repository: http://github.com/jaldhar/REST-Utils
-version: 0.4
+version: 0.5

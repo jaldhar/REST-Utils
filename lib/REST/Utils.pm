@@ -23,11 +23,11 @@ use constant POST_UNLIMITED  => -1;
 
 =head1 VERSION
 
-This document describes REST::Utils Version 0.4
+This document describes REST::Utils Version 0.5
 
 =cut
 
-our $VERSION = '0.4';
+our $VERSION = '0.5';
 
 =head1 DESCRIPTION
 
@@ -438,7 +438,7 @@ Jaldhar H. Vyas, C<< <jaldhar at braincells.com> >>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2010 Consolidated Braincells Inc. All rights reserved.
+Copyright (c) 2012 Consolidated Braincells Inc. All rights reserved.
 
 This distribution is free software; you can redistribute it and/or modify it
 under the terms of either:
