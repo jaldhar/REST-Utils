@@ -21,14 +21,14 @@ $mech->cgi( sub {
         print $q->header(-type => 'text/vrml');
     }
     else {
-        print $q->header(-type => $preferred);
+        print $q->header(-type => $preferred, -charset => q{});
     }
 });
 
 $mech->add_header(Accept => 'application/xhtml+xml;q=1.0, text/html;q=0.9, text/plain;q=0.8, */*;q=0.1');
 
 $mech->get('http://localhost/');
-is($mech->content_type, 'application/xhtml+xml', 'GET preferred content type');
+is($mech->response->header('content_type'), 'application/xhtml+xml', 'GET preferred content type');
 
 $mech->add_header(Accept => 'application/xhtml+xml;q=0.9, text/html;q=0.8, text/plain;q=1.0, */*;q=0.1');
 
@@ -43,7 +43,7 @@ is($mech->status, '415', 'GET preferred content type (unusable media type)');
 $mech->add_header(Accept => 'application/xhtml+xml;q=1.0, text/html;q=0.9, text/plain;q=0.8, */*;q=0.1');
 
 $mech->head('http://localhost/');
-is($mech->content_type, 'application/xhtml+xml', 'HEAD preferred content type');
+is($mech->response->header('content_type'), 'application/xhtml+xml', 'HEAD preferred content type');
 
 $mech->post('http://localhost/', content => q{}, Content_Type => 'text/html');
 is($mech->content_type, 'text/html', 'POST preferred content type (with Accept)');
