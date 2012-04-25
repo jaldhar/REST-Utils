@@ -13,3 +13,4 @@ t/http-tunnel.t
 t/mime-parse.t
 Makefile.PL
 META.yml
+META.json

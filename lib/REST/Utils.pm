@@ -23,11 +23,11 @@ use constant POST_UNLIMITED  => -1;
 
 =head1 VERSION
 
-This document describes REST::Utils Version 0.4
+This document describes REST::Utils Version 0.5
 
 =cut
 
-our $VERSION = '0.4';
+our $VERSION = '0.5';
 
 =head1 DESCRIPTION
 
@@ -76,11 +76,11 @@ sub best_match {
 
 =head3 get_body($cgi)
 
-This function takes a L<CGI> or compatible object as its first parameter.
+This function takes a L<CGI|CGI> or compatible object as its first parameter.
 
 It will retrieve the body of an HTTP request regardless of the request method.
 
-If the body is larger than L<CGI>.pms' POST_MAX variable allows or if
+If the body is larger than L<CGI|CGI>.pms' POST_MAX variable allows or if
 C<$ENV{CONTENT_LENGTH}> reports a bigger size than is actually available,
 get_body() will return undef.
 
@@ -181,9 +181,9 @@ sub fitness_and_quality_parsed {
 
 =head3 media_type($cgi, \@types)
 
-This function takes a L<CGI> or compatible object as its first parameter and a
-reference to a list of MIME media types as the second parameter.  It returns
-the member of the list most preferred by the requestor.
+This function takes a L<CGI|CGI> or compatible object as its first parameter
+and a reference to a list of MIME media types as the second parameter.  It
+returns the member of the list most preferred by the requestor.
 
 Example:
 
@@ -324,7 +324,7 @@ Example 1:
 
     my $method = request_method($cgi);
     
-This function takes a L<CGI> or compatible object as its first parameter.
+This function takes a L<CGI|CGI> or compatible object as its first parameter.
 
 Because many web sites don't allow the full set of HTTP methods needed 
 for REST, you can "tunnel" methods through C<GET> or C<POST> requests in 
@@ -356,11 +356,12 @@ attempted, it will be ignored.
 sub request_method {
     my ($cgi) = @_;
 
-    my $real_method = uc $cgi->request_method() || q{};
+    my $real_method = uc( $cgi->request_method() || q{} );
     my $tunnel_method =
       uc(    $cgi->http('X-HTTP-Method-Override')
           || $cgi->url_param('_method')
-          || $cgi->param('_method') )
+          || $cgi->param('_method')
+          || q{} )
       || undef;
 
     return $real_method if !defined $tunnel_method;
@@ -437,7 +438,7 @@ Jaldhar H. Vyas, C<< <jaldhar at braincells.com> >>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2010 Consolidated Braincells Inc. All rights reserved.
+Copyright (c) 2012 Consolidated Braincells Inc. All rights reserved.
 
 This distribution is free software; you can redistribute it and/or modify it
 under the terms of either:
