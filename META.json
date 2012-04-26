@@ -34,7 +34,7 @@
    "provides" : {
       "REST::Utils" : {
          "file" : "lib/REST/Utils.pm",
-         "version" : "0.5"
+         "version" : "0.6"
       }
    },
    "release_status" : "stable",
@@ -47,5 +47,5 @@
          "url" : "http://github.com/jaldhar/REST-Utils"
       }
    },
-   "version" : "0.5"
+   "version" : "0.6"
 }

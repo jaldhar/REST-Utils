@@ -23,11 +23,11 @@ use constant POST_UNLIMITED  => -1;
 
 =head1 VERSION
 
-This document describes REST::Utils Version 0.5
+This document describes REST::Utils Version 0.6
 
 =cut
 
-our $VERSION = '0.5';
+our $VERSION = '0.6';
 
 =head1 DESCRIPTION
 
