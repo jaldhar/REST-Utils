@@ -4,7 +4,7 @@ Priority: optional
 Build-Depends: debhelper (>= 7)
 Build-Depends-Indep: libtest-www-mechanize-cgi-perl, perl
 Maintainer: Jaldhar H. Vyas <jaldhar@debian.org>
-Standards-Version: 3.9.2
+Standards-Version: 3.9.3
 Homepage: http://search.cpan.org/dist/REST-Utils/
 Vcs-git: git://git@github.com:jaldhar/REST-Utils.git
 Vcs-Browser: http://github.com/jaldhar/REST-Utils
