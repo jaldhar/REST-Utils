@@ -3,10 +3,13 @@
 # Test content negotiation
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 12;
 use CGI;
 use Test::WWW::Mechanize::CGI;
 use REST::Utils qw( media_type );
+
+my @warnings;
+$SIG{__WARN__} = sub { push @warnings, @_ };
 
 my $mech = Test::WWW::Mechanize::CGI->new;
 $mech->cgi( sub {
@@ -24,6 +27,9 @@ $mech->cgi( sub {
         print $q->header(-type => $preferred, -charset => q{});
     }
 });
+
+$mech->get('http://localhost/');
+is($mech->response->header('content_type'), 'text/plain; charset=ISO-8859-1', 'GET preferred content type without Accept header');
 
 $mech->add_header(Accept => 'application/xhtml+xml;q=1.0, text/html;q=0.9, text/plain;q=0.8, */*;q=0.1');
 
@@ -62,3 +68,5 @@ is($mech->content_type, 'text/vrml', 'no content negotiation with DELETE');
 
 $mech->post('http://localhost/', Content_Type => undef);
 is($mech->status, '415', 'no content type');
+
+is_deeply \@warnings, [], 'No warnings';
