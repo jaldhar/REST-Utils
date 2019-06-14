@@ -66,6 +66,7 @@ Example:
 
 sub best_match {
     my ( $supported, $header ) = @_;
+    return undef if !defined $header;
     my @parsed_header = map { [ parse_media_range($_) ] } split /,/msx, $header;
     my @weighted_matches =
       sort { $a->[0][0] <=> $b->[0][0] || $a->[0][1] <=> $b->[0][1] }
